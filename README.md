@@ -9,7 +9,7 @@ Use composer to install this plug-in:
 `composer require michielfb/magento2-vatid`
 
 ## Example
-On a address a VAT-number is entered as NL123456789B01 combined with the country NL. By default Magento will mark this as invalid.
+On a address a VAT-number is entered as NL123456789B01 and selects the country Netherlands (NL). By default Magento will mark this as invalid.
 
 When this plug-in is used the country prefix will be stripped from the VAT-number resulting in the VAT-number 123456789B01. Magento will mark this VAT-number as valid\*.
 
