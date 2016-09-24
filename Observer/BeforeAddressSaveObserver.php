@@ -1,6 +1,7 @@
 <?php
 namespace Michielfb\Vatid\Observer;
 
+use Magento\Customer\Model\Vat;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
@@ -14,23 +15,38 @@ class BeforeAddressSaveObserver implements ObserverInterface
     ];
 
     /**
+     * @var Vat
+     */
+    protected $vat;
+
+    /**
+     * BeforeAddressSaveObserver constructor.
+     * @param Vat $vat
+     */
+    public function __construct(Vat $vat)
+    {
+        $this->vat = $vat;
+    }
+
+    /**
      * @param Observer $observer
      * @return void
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         /** @var \Magento\Customer\Model\Address $address */
         $address = $observer->getDataObject();
 
-        $vatId      = strtoupper($address->getVatId());
-        $countryId  = strtoupper($address->getCountryId());
+        if ($this->vat->isCountryInEU($address->getCountry())) {
 
-        $vatId = $this->cleanup($vatId);
+            $vatId = strtoupper($address->getVatId());
+            $countryId = strtoupper($address->getCountry());
 
+            $vatId = $this->cleanup($vatId);
+            $vatId = $this->removeCountryPrefix($vatId, $countryId);
 
-        $vatId = $this->removeCountryPrefix($vatId, $countryId);
-
-        $address->setVatId($vatId);
+            $address->setVatId($vatId);
+        }
     }
 
     /**
@@ -41,7 +57,7 @@ class BeforeAddressSaveObserver implements ObserverInterface
      */
     protected function cleanup($vatId)
     {
-        return str_replace($this->characters, '', $vatId);
+        return str_replace($this->getCharacters(), '', $vatId);
     }
 
     /**
@@ -58,5 +74,14 @@ class BeforeAddressSaveObserver implements ObserverInterface
         }
 
         return $vatId;
+    }
+
+    /**
+     * Get the characters that need to be removed.
+     * @return array
+     */
+    public function getCharacters()
+    {
+        return $this->characters;
     }
 }
