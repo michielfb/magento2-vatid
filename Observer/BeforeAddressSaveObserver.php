@@ -20,7 +20,6 @@ class BeforeAddressSaveObserver implements ObserverInterface
     protected $vat;
 
     /**
-     * BeforeAddressSaveObserver constructor.
      * @param Vat $vat
      */
     public function __construct(Vat $vat)
@@ -29,8 +28,10 @@ class BeforeAddressSaveObserver implements ObserverInterface
     }
 
     /**
+     * Format EU Vat-numbers before saving to the database
+     * and VAT-number validation.
+     *
      * @param Observer $observer
-     * @return void
      */
     public function execute(Observer $observer)
     {
@@ -78,6 +79,7 @@ class BeforeAddressSaveObserver implements ObserverInterface
 
     /**
      * Get the characters that need to be removed.
+     *
      * @return array
      */
     public function getCharacters()
